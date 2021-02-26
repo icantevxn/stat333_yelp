@@ -1,0 +1,250 @@
+---
+title: "Yelp"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r reading}
+# Read data and clean up some R formatting issues
+yelp_train = read.csv("Yelp_train.csv")
+yelp_test = read.csv("Yelp_test.csv")
+yelp_validate = read.csv("Yelp_validate.csv")
+# since there is one additional column which is star in yelp_train, make a temporary file of it without column 3 which is the row of stars
+yelp_train_temp = yelp_train[,-3]
+yelp_2combined = rbind(yelp_test,yelp_validate)
+yelp_3combined = rbind(yelp_train_temp,yelp_test,yelp_validate)
+```
+
+
+```{r cleaning}
+# Some basic data cleaning
+# get rid of the first column, which is the original sample ID
+yelp_train = yelp_train[,-1]
+yelp_2combined = yelp_2combined[,-1]
+yelp_3combined = yelp_3combined[,-1]
+```
+
+
+```{r converting}
+# convert text into actual strings
+yelp_train$text = as.character(yelp_train$text)
+yelp_2combined$text = as.character(yelp_2combined$text)
+yelp_3combined$text = as.character(yelp_3combined$text)
+```
+
+
+
+```{r most frequently used}
+# combine all the review texts from all three files
+text_train = paste(unlist(yelp_train$text), collapse =" ")
+# find the top 500 frequently used words
+library(tm)
+corpus_train = Corpus(VectorSource(text_train))
+corpus_train = tm_map(corpus_train, removePunctuation)
+corpus_train = tm_map(corpus_train, content_transformer(tolower))
+corpus_train = tm_map(corpus_train, stripWhitespace)
+dtm = TermDocumentMatrix(corpus_train)
+m = as.matrix(dtm)
+v = sort(rowSums(m),decreasing=TRUE)
+d = data.frame(word = names(v),freq=v)
+head(d, 5000)
+frequent_words_and_frequency = head(d, 8000)
+frequent_words = as.character(frequent_words_and_frequency$word)
+```
+
+
+```{r only select adjectives and adverbs}
+library(tidytext)
+library(tidyverse)
+interested_words = unnest_tokens(tibble(txt=frequent_words),word, txt) %>%
+  left_join(parts_of_speech) %>%
+  filter(pos %in% c("Adjective","Adverb")) %>%
+  pull(word) %>%
+  unique
+```
+
+```{r}
+different_words = setdiff(interested_words, colnames(yelp_train)[17:ncol(yelp_train)])
+```
+
+
+```{r new words distribution}
+# select the predictors from interested_words
+new_words = different_words
+```
+
+
+
+```{r}
+# Generate word count for the entire dictionary of words
+library(dplyr)
+library(tidytext)
+library(tm)
+# Here I am only building the dictionary using the first 5 reviews. If you really want to do this for all the reviews, be prepared for the run time and the size of the dictionary
+yelp_text_tbl = tbl_df(data.frame(uniqueID = 1:nrow(yelp_train), yelp_train))
+yelp_text_tbl_words = yelp_text_tbl %>% select(uniqueID,text) %>%
+                      unnest_tokens(word, text) %>% filter(str_detect(word,"^[a-z']+$")) %>%
+                      group_by(uniqueID) %>% count(word) 
+
+ReviewWordMatrix = yelp_text_tbl_words %>% cast_dtm(uniqueID, word, n)
+```
+
+```{r}
+example = read.table("200-300.txt")
+example = unlist( example, use.names=F)
+
+extra_words = setdiff(example, new_words)
+
+columnNames = colnames(ReviewWordMatrix)
+
+to_be_calc = setdiff(extra_words, columnNames)
+```
+
+
+```{r}
+library(stringr)
+
+vector = c("\\$", "shit hole", "low standard", "\\!", "\\.", "10/10", "\\?", "stay away" ,":\\(", ":\\)")
+
+
+for (i in 1:nrow(yelp_train)){
+  for (j in 1:length(vector)){
+      yelp_train[i,vector[j]] = str_count(yelp_train$text[i], regex(vector[j], ignore_case=T)) # ignore the upper/lower case in the text
+  }
+}
+
+```
+
+
+```{r}
+finalist = setdiff (extra_words, to_be_calc)
+
+new_train1 = ReviewWordMatrix[,new_words]
+new_train2 = ReviewWordMatrix[,finalist]
+
+
+final_new_train1=as.data.frame(as.matrix(new_train1))
+final_new_train2=as.data.frame(as.matrix(new_train2))
+
+temp_df = cbind(final_new_train1, final_new_train2)
+
+final_df = cbind(yelp_train, temp_df)
+
+
+
+```
+
+
+```{r palette}
+dat = final_df[,-c(1,3:5,9,13)]
+library(RColorBrewer)
+pal = colorRampPalette(brewer.pal(8, "Set2"))(ncol(dat)-1)
+```
+
+
+```{r # Lasso}
+# Lasso
+library(glmnet)
+Xmat = as.matrix(dat[,c(-1)])
+Ymat = dat$stars
+lasso = glmnet(Xmat, Ymat) # by default, alpha=1 gives Lasso
+plot(lasso, xvar = "lambda", label=TRUE, lwd=3, col=pal, main="Lasso Regression"); abline(h=0, lwd=1, lty=2, col="grey")
+legend("topright", lwd=3, lty=1, legend=colnames(Xmat), col=pal)
+```
+
+
+
+```{r lasso penalty, choosing lambda by cross-validation}
+set.seed(1)
+# Lasso penalty, choosing lambda by cross-validation
+lasso_cv = cv.glmnet(Xmat, Ymat, alpha = 1, nfold=5)
+plot(lasso_cv)
+```
+
+
+```{r}
+#lambda that minimize the cross-validation error
+min = lasso_cv$lambda.min #minimizing lambda
+coef(lasso_cv, s = "lambda.min") #coefficient estimate
+```
+
+
+
+
+```{r}
+# Here I am only building the dictionary using the first 5 reviews. If you really want to do this for all the reviews, be prepared for the run time and the size of the dictionary
+yelp_text_tbl2 <- tbl_df(data.frame(uniqueID = 1:nrow(yelp_2combined), yelp_2combined))
+yelp_text_tbl_words2 <- yelp_text_tbl2 %>% select(uniqueID,text) %>%
+                      unnest_tokens(word, text) %>% filter(str_detect(word,"^[a-z']+$")) %>%
+                      group_by(uniqueID) %>% count(word) 
+ReviewWordMatrix2 <- yelp_text_tbl_words2 %>% cast_dtm(uniqueID, word, n)
+```
+
+
+```{r}
+library(stringr)
+
+vector = c("\\$", "shit hole", "low standard", "\\!", "\\.", "10/10", "\\?", "stay away" ,":\\(", ":\\)")
+
+
+for (i in 1:nrow(yelp_2combined)){
+  for (j in 1:length(vector)){
+      yelp_2combined[i,vector[j]] = str_count(yelp_2combined$text[i], regex(vector[j], ignore_case=T)) # ignore the upper/lower case in the text
+  }
+}
+
+```
+
+
+```{r}
+finalist = setdiff (extra_words, to_be_calc)
+library(tm)
+removeWords(finalist, "lowlight")
+removeWords(finalist, "untidy")
+finalist
+new_test1 = ReviewWordMatrix2[,new_words]
+new_test2 = ReviewWordMatrix2[,finalist]
+
+
+final_new_test1=as.data.frame(as.matrix(new_test1))
+final_new_test2=as.data.frame(as.matrix(new_test2))
+
+temp_df = cbind(final_new_test1, final_new_test2)
+
+temp_df$newID = c(seq(1,nrow(yelp_2combined),1))
+
+final_df2 <- cbind(yelp_2combined, temp_df)
+
+
+
+```
+
+
+```{r running on test and validation set using ridge}
+tempfinal <- as.matrix(final_df2[,-c(1:4, 8, 12, 1936)])
+```
+
+
+```{r}
+star_out = data.frame(Id=final_df2$Id, Expected=predict(lasso_cv, newx = tempfinal, s = "lambda.min"))
+write.csv(star_out, file='14_Submission_lasso.csv', row.names=FALSE)
+```
+
+
+```{r}
+submit = read.csv("14_Submission_lasso.csv")
+for (i in 1:nrow(submit)){
+  if (submit$X1[i] > 5){
+    submit$X1[i] = 5
+  }
+  else if (submit$X1[i] < 1){
+    submit$X1[i] = 1
+  }
+}
+write.csv(submit, file='14_Submission_lasso_submit.csv', row.names=FALSE)
+```
+
+
