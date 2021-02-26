@@ -1,0 +1,91 @@
+---
+title: "Proposal: The Effects of Interpersonal Relationships on Academic Performance"
+author:
+- "Team DDPE:"
+- Divija Goel
+- Evangeline Lim
+- Desmond Fung
+- Siyun Wu
+date: "3/12/2019"
+output: pdf_document
+---
+\newpage
+
+##Summary:
+
+####Statement of purpose: 
+The  purpose of this study is to study the effects of interpersonal relationships of undergraduate students in the University of Wisconsin-Madison on academic performance. It is believed that undergraduate students of the University of Wisconsin-Madison who have rich interpersonal relationships will have a tendency to perform weaker academically. This is because the student will have less time to focus on their academics if they are spending more time building connections with people outside the classroom. 
+	
+####Specific aims: 
+Most college students are concerned about their academic performance, and hope to get a higher score. This study aims to discover the relationship between academic achievements and interpersonal relationships. According to Wikipedia (1), interpersonal relationships are formed through interactions with people through spending time in clubs, workplaces, religious sanctuaries and etcetera. Therefore, in this study, to measure interpersonal relations of students in UW-Madison, the students’ participation in religious practices, whether or not they are in a relationship, time spent in student organizations and hangouts with friends will be recorded. These variables will be treated as explanatory variables since they are used to predict the academic performance of students. For measuring academic performance of students, the students’ GPA, average credits taken per semester, studying hours, major and whether they are enrolled in the honors program or not, and whether they have been in the dean's list or not will be investigated. These variables will be treated as response variables.
+
+
+####Background and significance:
+Achieving a balance between academics while having a social life in college is challenging. College is a very stimulating environment, full of wonderful opportunities for both socializing and learning. College is where high school graduates are forced into building new relationships in a brand new environment. So, finding the balance between building these relationships and academics will not be easy since college offers so many more options as compared to high school. This study will review different type of social experiences among undergraduate students at University of Wisconsin - Madison and their impact on academic success. It is important to do so because by obtaining this knowledge, students can use the findings of this study to improve their academic performance by optimizing their time spent on building interpersonal relationships and time spend on improving academic performance.
+
+\newpage
+
+##Research design: 
+
+####Population of interest: 
+All University of Wisconsin - Madison undergraduate students.
+
+####Type of study: 
+Convenience sample survey study.
+
+####Data description & data collection: 
+
+There will be a Google form created to conduct a sample survey online. The form will ask for details to get to know the participant's interpersonal relationships and academic performance. To know and be able to measure the interpersonal relationships and academic performance of the student better, there will be a few categorical and numerical data that will be asked. For instance, for interpersonal relationships, the following data will be collected and will be expected as a response:
+
+
+* Religious practice on campus: yes or no
+* In a relationship: yes or no
+* Time spent on student organizations: numerical input 
+* Hangouts with friends: numerical input 
+
+
+For recording academic performance, the following data will be collected and will be expected as a response:
+
+* Major: Category 
+* Dean’s list (if ever): yes or no 
+* Honor’s program: yes or no
+* GPA: numerical input
+* Credits: numerical input
+* Number of study hours: numerical input
+ 
+####Sampling scheme: 
+
+To obtain the samples, a Google form will be posted on Facebook groups that are used by the students of UW-Madison in an attempt to randomize our sample. The form will be sent out to friends and acquaintances using Facebook messenger or other form of social media. These forms will help obtain a convenience sample because the team members will only be able to reach out to the people they know. However, there could be a hint of bias because the study will be restricted to participants who have an access to social media, and a hint of non response bias because there will be participants who might choose to not attempt or complete the survey. 
+
+####Table of proxy variables by explanatory and then response variables:
+
+|**Type of Variable** | **Explanatory Variable: Interpersonal Relationships** | **Response Variable: Academic Performance**|
+| ----------------- | ----------------------- | -------------------- |
+|**Categorical** | Religious (ordinal) | Credits (ordinal) |
+||In a relationship (nominal) |Dean’s List (nominal)|
+|||  Honors Program (nominal)|
+|||Major (nominal)|
+||||
+|**Numerical** | Student Organizations  | GPA |
+||Hangouts|Study Hours|
+
+\newpage 
+
+####Dictionary:
+
+* **Credits** - The average amount of credits the student takes per semester: 1- Low (12-15 credits), 2 - High (16 and more credits)
+* **Dean’s List** - Whether the student has ever been in the Dean’s List (Yes or No)
+* **GPA** - The current GPA of the student on a 4-point scale.
+* **Hangouts** - The number of hours spent on hanging out with friends in a week not for educational purposes.
+* **Honors Program** - Whether the student is enrolled in the Honors Program (Yes or No)
+* **In A Relationship** - Whether the student is in a relationship or not (Yes or No)
+* **Major** - The intended or declared major of the student (If more than one, pick one main major)
+* **Religious** - Level of participation in religious activities in a week: 1 - Low (less than 1 hour), 2 - Moderate (1-3 hours), 3 - High (more than 3 hours).
+* **Student Organization** - The number of hours that the student spends for student organizations on campus.
+* **Study Hours** - The number of hours the student puts into studying for all classes in a week.
+
+##References: 
+
+1) Wikipedia. (2019, March 11). Interpersonal Relationship. Retreived from https://en.wikipedia.org/wiki/Interpersonal_relationship 
+
+2) ACT, Inc. (2006). Balancing My Social Life. Retrieved from https://www.mtu.edu/counseling/resources/balancingsociallife.pdf
